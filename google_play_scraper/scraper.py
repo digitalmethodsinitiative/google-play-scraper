@@ -190,12 +190,16 @@ class PlayStoreScraper:
 
 		groups = []
 		for list in data:
+			if not list:
+				continue
 			for item in list:
 				groups.append(item)
 
 		result = []
 		for group in groups:
-			if not group[0]:
+			if not group:
+				continue
+			elif not group[0]:
 				result.append(group[1])
 			else:
 				for permission in group[2]:
