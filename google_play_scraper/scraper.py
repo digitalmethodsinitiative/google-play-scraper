@@ -1,6 +1,7 @@
 """
 Google Play Store Scraper
 """
+import datetime
 import requests
 import json
 import re
@@ -251,7 +252,7 @@ class PlayStoreScraper:
 			"category": info[0][12][25],
 			"num_downloads": info[0][12][9][2],
 			"num_downloads_approx": info[0][12][9][1],
-			"published": info[0][12][8][0],
+			"published": datetime.datetime.fromtimestamp(int(info[0][12][8][0])).strftime("%c"),
 			"published_timestamp": info[0][12][8][0],
 			"pegi": pegi[0][1][2][9][0],
 			"filesize": version[0],
