@@ -239,7 +239,7 @@ class PlayStoreScraper:
 		except json.JSONDecodeError:
 			raise PlayStoreException("Could not parse Play Store response")
 
-		return {
+		app = {
 			"img_src": info[0][12][1][3][2],
 			"title": info[0][0][0],
 			"link": url,
@@ -247,7 +247,6 @@ class PlayStoreScraper:
 			"developer_link": self.PLAYSTORE_URL + info[0][12][5][5][4][2],
 			"developer_name": info[0][12][5][1],
 			"description": info[0][10][0][1],
-			"rating": rating[0][0][0][7][0][1] if rating[0][0][0][7] else 0,
 			"price_inapp": info[0][12][12][0] if info[0][12][12] else "",
 			"category": info[0][12][25],
 			"num_downloads": info[0][12][9][2],
@@ -261,6 +260,13 @@ class PlayStoreScraper:
 			"price": "%i %s" % (pricing[0][2][0][0][0][1][0][0], pricing[0][2][0][0][0][1][0][1]) if pricing[0][
 				2] else 0
 		}
+
+		try:
+			app["rating"] = rating[0][0][0][7][0][1]
+		except TypeError:
+			app["rating"] = 0
+
+		return app
 
 	def get_multiple_app_details(self, app_ids, country="nl", lang="nl"):
 		"""
