@@ -39,14 +39,18 @@ class PlayStoreScraper:
 		url += "&hl=" + lang
 		url += "&gl=" + country
 
+		amount = int(num) * int(page)
+
 		try:
 			result = requests.get(url).text
 			data = self.extract_json_block(result, "ds:3")
 			data = json.loads(data)
 		except json.JSONDecodeError:
 			raise PlayStoreException("Could not parse search query response")
+		except IndexError:
+			return []
 
-		return [app[12][0] for app in data[0][1][0][0][0]][:(num * page)]
+		return [app[12][0] for app in data[0][1][0][0][0]][:amount]
 
 	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="nl", country="nl"):
 		"""
@@ -91,7 +95,7 @@ class PlayStoreScraper:
 			result = requests.get(url).text
 			block = self.extract_json_block(result, "ds:3")
 			data = json.loads(block)
-		except json.JSONDecodeError:
+		except (json.JSONDecodeError, PlayStoreException):
 			raise PlayStoreException("Could not parse Play Store response")
 
 		return [app[12][0] for app in data[0][1][0][0][0]]
@@ -108,8 +112,13 @@ class PlayStoreScraper:
 
 		:return list:  List of App IDs linked to developer
 		"""
-		url = self.PLAYSTORE_URL + "/store/apps/developer?id="
-		url += quote_plus(developer_id)
+		try:
+			developer_id = int(developer_id)
+			url = self.PLAYSTORE_URL + "/store/apps/dev?id="
+		except ValueError:
+			url = self.PLAYSTORE_URL + "/store/apps/dev?id="
+
+		url += quote_plus(str(developer_id))
 
 		url += "&hl=" + lang
 		url += "&gl=" + country
@@ -118,7 +127,7 @@ class PlayStoreScraper:
 			result = requests.get(url).text
 			data = self.extract_json_block(result, "ds:3")
 			data = json.loads(data)
-		except json.JSONDecodeError:
+		except (json.JSONDecodeError, PlayStoreException):
 			raise PlayStoreException("Could not parse Play Store response")
 
 		return [app[12][0] for app in data[0][1][0][0][0]][:num]
@@ -149,7 +158,7 @@ class PlayStoreScraper:
 			data = self.extract_json_block(result, "ds:7")
 			data = json.loads(data)
 			similar_url = self.PLAYSTORE_URL + data[1][1][0][0][3][4][2]
-		except json.JSONDecodeError:
+		except (json.JSONDecodeError, PlayStoreException):
 			raise PlayStoreException("Could not parse Play Store response")
 
 		try:
@@ -222,6 +231,7 @@ class PlayStoreScraper:
 
 		:return dict:  App details, as returned by the Play Store.
 		"""
+		print(app_id)
 		url = self.PLAYSTORE_URL + "/store/apps/details?id="
 		url += quote_plus(app_id)
 
@@ -237,7 +247,7 @@ class PlayStoreScraper:
 			pegi = json.loads(self.extract_json_block(result, "ds:11"))
 			rating = json.loads(self.extract_json_block(result, "ds:14"))
 
-		except json.JSONDecodeError:
+		except (json.JSONDecodeError, PlayStoreException):
 			raise PlayStoreException("Could not parse Play Store response")
 
 		app = {
@@ -301,8 +311,11 @@ class PlayStoreScraper:
 		prefix = re.compile(r"AF_init[dD]ata[cC]all[bB]ack\s*\({[^{}]*key:\s*'" + re.escape(block_id) + ".*?data:")
 		suffix = re.compile(r"}\s*\)\s*;")
 
-		block = prefix.split(html)[1]
-		block = suffix.split(block)[0]
+		try:
+			block = prefix.split(html)[1]
+			block = suffix.split(block)[0]
+		except IndexError:
+			raise PlayStoreException("Could not extract block %s" % block_id)
 
 		block = block.strip()
 		block = re.sub(r"^function\s*\([^)]*\)\s*{", "", block)
