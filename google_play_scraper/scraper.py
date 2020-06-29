@@ -58,7 +58,7 @@ class PlayStoreScraper:
 		# subsequent requests via the internal API to request the additional
 		# apps. This request payload was borrowed from google-play-scraper.
 		body = '[[["qnKhOb","[[null,[[10,[10,50]],true,null,[96,27,4,8,57,30,110,79,11,16,49,1,3,9,12,104,55,56,51,10,34,77]],null,\\"%token%\\"]]",null,"generic"]]]'
-		token = data[0][1][0][0][7][1]
+		token = data[0][1][0][0][7][1] if data[0][1][0][0][7] else None
 
 		url = self.PLAYSTORE_URL + "/_/PlayStoreUi/data/batchexecute?rpcids=qnKhOb&bl=boq_playuiserver_20190424.04_p0"
 		url += "&hl=" + lang
