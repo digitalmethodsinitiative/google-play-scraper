@@ -347,5 +347,6 @@ class PlayStoreScraper:
 		block = block.strip()
 		block = re.sub(r"^function\s*\([^)]*\)\s*{", "", block)
 		block = re.sub("}$", "", block)
+		block = re.sub(r", sideChannel: {$", "", block)
 
 		return block
