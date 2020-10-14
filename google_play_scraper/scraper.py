@@ -318,7 +318,7 @@ class PlayStoreScraper:
 		:return generator:  A list (via a generator) of app details
 		"""
 		for app_id in app_ids:
-			yield self.get_app_details(app_id)
+			yield self.get_app_details(app_id, country=country, lang=lang)
 
 	def extract_json_block(self, html, block_id):
 		"""
