@@ -107,4 +107,14 @@ class PlayStoreException(BaseException):
 	"""
 	Thrown when an error occurs in the Play Store scraper
 	"""
-	pass
+	def __init__(self, *args):
+		if args:
+			self.message = args[0]
+		else:
+			self.message = None
+
+	def __str__(self):
+		if self.message:
+			return "PlayStoreException, {0}".format(self.message)
+		else:
+			return "PlayStoreException raised"
