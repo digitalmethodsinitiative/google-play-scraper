@@ -158,7 +158,7 @@ class PlayStoreScraper:
 		except (json.JSONDecodeError, PlayStoreException):
 			raise PlayStoreException("Could not parse Play Store response")
 
-		return [app[12][0] for app in data[0][1][0][0][0]][:num]
+		return [app[12][0] for app in data[0][1][0][0][0]]
 
 	def get_similar_app_ids_for_app(self, app_id, country="nl", lang="nl"):
 		"""
