@@ -148,9 +148,6 @@ class PlayStoreScraper:
 
 		url += quote_plus(str(developer_id))
 
-		url += "&hl=" + lang
-		url += "&gl=" + country
-
 		try:
 			result = requests.get(url).text
 			data = self.extract_json_block(result, "ds:3")
