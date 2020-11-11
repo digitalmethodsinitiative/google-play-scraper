@@ -149,7 +149,7 @@ class PlayStoreScraper:
 
 		url += quote_plus(str(developer_id))
 
-                url += "?hl=" + lang
+                url += "&hl=" + lang
                 url += "&gl=" + country
 
 		try:
