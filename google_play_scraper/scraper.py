@@ -291,7 +291,7 @@ class PlayStoreScraper:
 			"num_downloads_approx": info[0][12][9][1],
 			"published": datetime.datetime.fromtimestamp(int(info[0][12][8][0])).strftime("%c"),
 			"published_timestamp": info[0][12][8][0],
-			"pegi": pegi[0][1][2][9][0],
+			"pegi": pegi[1][2][9][0],
 			"filesize": version[0],
 			"os": version[2],
 			"software": version[1],
