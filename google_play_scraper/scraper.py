@@ -276,7 +276,19 @@ class PlayStoreScraper:
 			rating = json.loads(self.extract_json_block(result, "ds:14"))
 
 		except (json.JSONDecodeError, PlayStoreException):
-			raise PlayStoreException("Could not parse Play Store response")
+			try:
+				#If we fail first, retry after a sleep.
+				# Fail if we cannot get a connection or data
+				time.sleep(2)
+				result = requests.get(url).text
+
+				pricing = json.loads(self.extract_json_block(result, "ds:3"))
+				info = json.loads(self.extract_json_block(result, "ds:5"))
+				version = json.loads(self.extract_json_block(result, "ds:8"))
+				pegi = json.loads(self.extract_json_block(result, "ds:11"))
+				rating = json.loads(self.extract_json_block(result, "ds:14"))
+			except:				
+				raise PlayStoreException("Could not parse Play Store response for {0}".format(app_id))
 
 		app = {
 			"img_src": info[0][12][1][3][2],
