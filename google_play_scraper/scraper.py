@@ -5,6 +5,7 @@ import datetime
 import requests
 import json
 import re
+import time
 
 from urllib.parse import quote_plus
 from google_play_scraper.util import PlayStoreException, PlayStoreCollections
@@ -147,6 +148,9 @@ class PlayStoreScraper:
 			url = self.PLAYSTORE_URL + "/store/apps/developer?id="
 
 		url += quote_plus(str(developer_id))
+
+                url += "?hl=" + lang
+                url += "&gl=" + country
 
 		try:
 			result = requests.get(url).text
@@ -315,7 +319,15 @@ class PlayStoreScraper:
 		:return generator:  A list (via a generator) of app details
 		"""
 		for app_id in app_ids:
-			yield self.get_app_details(app_id, country=country, lang=lang)
+			try:
+				time.sleep(1)
+				yield self.get_app_details(app_id, country=country, lang=lang)
+			except PlayStoreException as pse:
+				self._log_error(country, pse.message)
+				continue
+			except Exception as e:
+				self._log_error(country, e)
+				continue
 
 	def extract_json_block(self, html, block_id):
 		"""
@@ -347,3 +359,17 @@ class PlayStoreScraper:
 		block = re.sub(r", sideChannel: {$", "", block)
 
 		return block
+
+	def _log_error(self, app_store_country, message):
+		"""
+		Write the error to a local file to capture the error. 
+
+	        :param str app_store_country: the country for the app store
+	        :param str message: the error message to log
+
+		"""
+		app_log = "{0}_log.txt".format(app_store_country)
+		errortime = datetime.datetime.now().strftime('%Y%m%d_%H:%M:%S - ')
+		fh = open(app_log, "a")
+		fh.write("%s %s \n" % (errortime,message))
+		fh.close()
