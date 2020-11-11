@@ -2,6 +2,27 @@
 Play Store Scraper utility classes
 """
 
+import json
+
+class PlayStoreUtils:
+	"""
+	Helper class to access the names of the other classes
+	"""
+
+	def get_entries(self, clazz_name):
+		"""
+			Get the members and their names from the function
+
+			: param obj clazz_name: Name of the class to be read
+
+			: return obj json: A JSON object of name against values
+		"""
+		method_names  = {}
+		for collection in dir(clazz_name):
+			if not collection.startswith('__'):
+				method_names[str(collection.replace('_', ' '))] = getattr(clazz_name, str(collection))
+		return json.dumps({'names': method_names})
+
 class PlayStoreCollections:
 	"""
 	Play store collection IDs
