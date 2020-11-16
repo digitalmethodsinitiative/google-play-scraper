@@ -149,8 +149,8 @@ class PlayStoreScraper:
 
 		url += quote_plus(str(developer_id))
 
-                url += "&hl=" + lang
-                url += "&gl=" + country
+		url += "&hl=" + lang
+		url += "&gl=" + country
 
 		try:
 			result = requests.get(url).text
