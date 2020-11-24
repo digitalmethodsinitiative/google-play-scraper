@@ -33,8 +33,12 @@ class PlayStoreScraper:
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
 
-		:return list:  List of App IDs returned for search query
+		:return list:  List of Play IDs returned for search query
 		"""
+
+		if term is None or term == "":
+			raise PlayStoreException('No term was given')
+
 		url = self.PLAYSTORE_URL + "/store/search?c=apps&q="
 		url += quote_plus(term)
 		url += "&hl=" + lang
@@ -79,7 +83,7 @@ class PlayStoreScraper:
 			# no token means no next page
 			token = apps_page[0][0][7][1] if apps_page[0][0][7] else None
 
-		return apps
+		return apps[:amount] if len(apps) > amount else apps 
 
 	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="nl", country="nl"):
 		"""
@@ -99,7 +103,7 @@ class PlayStoreScraper:
 		:param str country:  Two-letter country code for the store to search in.
 		                     Defaults to 'nl'.
 
-		:return:  List of App IDs in collection.
+		:return:  List of Play IDs in collection.
 		"""
 		if not collection:
 			collection = PlayStoreCollections.TOP_FREE
@@ -131,7 +135,7 @@ class PlayStoreScraper:
 
 	def get_app_ids_for_developer(self, developer_id, num=60, country="nl", lang="nl"):
 		"""
-		Retrieve App IDs linked to given developer
+		Retrieve Play IDs linked to given developer
 
 		:param str developer_id:  Developer ID
 		:param int num:  Number of results to return. Defaults to 60.
@@ -139,7 +143,7 @@ class PlayStoreScraper:
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
 
-		:return list:  List of App IDs linked to developer
+		:return list:  List of Play IDs linked to developer
 		"""
 		try:
 			developer_id = int(developer_id)
@@ -163,13 +167,13 @@ class PlayStoreScraper:
 
 	def get_similar_app_ids_for_app(self, app_id, country="nl", lang="nl"):
 		"""
-		Retrieve list of App IDs of apps similar to given app
+		Retrieve list of Play IDs of apps similar to given app
 
 		This one is a bit special because we first request the app details page
 		to get the link to the 'similar apps' page, and then request that page.
 		So this costs 2 requests per call.
 
-		:param str app_id:  App ID to find similar apps for
+		:param str app_id:  Play ID to find similar apps for
 		:param str country:  Two-letter country code for the store to search in.
 		                     Defaults to 'nl'.
 		:param str lang:  Language code to search with, default 'nl'
@@ -203,7 +207,7 @@ class PlayStoreScraper:
 		"""
 		Get a list of permissions for a given app
 
-		:param string app_id:  App ID to get permissions for
+		:param string app_id:  Play ID to get permissions for
 		:param string lang:  Language, defaults to 'en'. Parts of the
 		                     permission description seems to be in english no
 		                     matter the value of this parameter.
@@ -253,12 +257,12 @@ class PlayStoreScraper:
 		"""
 		Get app details for given app ID
 
-		:param str app_id:  App ID to retrieve details for
+		:param str app_id:  Play ID to retrieve details for
 		:param str country:  Two-letter country code of store to search in,
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
 
-		:return dict:  App details, as returned by the Play Store.
+		:return dict:  Play details, as returned by the Play Store.
 		"""
 		url = self.PLAYSTORE_URL + "/store/apps/details?id="
 		url += quote_plus(app_id)
@@ -323,7 +327,7 @@ class PlayStoreScraper:
 		"""
 		Get app details for a list of app IDs
 
-		:param list app_id:  App IDs to retrieve details for
+		:param list app_id:  Play IDs to retrieve details for
 		:param str country:  Two-letter country code of store to search in,
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
