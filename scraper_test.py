@@ -10,6 +10,11 @@ def test_term_no_exception():
     results = scraper.get_app_ids_for_query("mindful", country="gb", lang="en")
     assert len(results) > 0
 
+def test_term_less_default():
+    scraper = PlayStoreScraper()
+    results = scraper.get_app_ids_for_query("mindful", country="gb", lang="en", num=10)
+    assert len(results) < 50
+
 def test_term_results_less_than_default():
     scraper = PlayStoreScraper()
     results = scraper.get_app_ids_for_query("racism", country="gb", lang="en")
