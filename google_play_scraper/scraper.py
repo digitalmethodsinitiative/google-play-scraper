@@ -83,7 +83,7 @@ class PlayStoreScraper:
 			# no token means no next page
 			token = apps_page[0][0][7][1] if apps_page[0][0][7] else None
 
-		return apps[:amount] if len(apps) > amount else apps 
+		return apps[:amount] 
 
 	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="nl", country="nl"):
 		"""
