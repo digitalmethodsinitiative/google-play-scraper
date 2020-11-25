@@ -51,6 +51,8 @@ class PlayStoreScraper:
 			result = requests.get(url).text
 			data = self.extract_json_block(result, "ds:3")
 			data = json.loads(data)
+		except ConnectionError as ce:
+			raise PlayStoreException("Could not not connect to store: {}".format(str(ce)))
 		except json.JSONDecodeError:
 			raise PlayStoreException("Could not parse search query response")
 		except IndexError:
