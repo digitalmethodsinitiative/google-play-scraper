@@ -5,6 +5,7 @@ import datetime
 import requests
 import json
 import re
+import time
 
 from urllib.parse import quote_plus
 from google_play_scraper.util import PlayStoreException, PlayStoreCollections
@@ -32,8 +33,12 @@ class PlayStoreScraper:
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
 
-		:return list:  List of App IDs returned for search query
+		:return list:  List of Play IDs returned for search query
 		"""
+
+		if term is None or term == "":
+			raise PlayStoreException('No term was given')
+
 		url = self.PLAYSTORE_URL + "/store/search?c=apps&q="
 		url += quote_plus(term)
 		url += "&hl=" + lang
@@ -46,6 +51,8 @@ class PlayStoreScraper:
 			result = requests.get(url).text
 			data = self.extract_json_block(result, "ds:3")
 			data = json.loads(data)
+		except ConnectionError as ce:
+			raise PlayStoreException("Could not not connect to store: {}".format(str(ce)))
 		except json.JSONDecodeError:
 			raise PlayStoreException("Could not parse search query response")
 		except IndexError:
@@ -78,7 +85,7 @@ class PlayStoreScraper:
 			# no token means no next page
 			token = apps_page[0][0][7][1] if apps_page[0][0][7] else None
 
-		return apps
+		return apps[:amount] 
 
 	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="nl", country="nl"):
 		"""
@@ -98,7 +105,7 @@ class PlayStoreScraper:
 		:param str country:  Two-letter country code for the store to search in.
 		                     Defaults to 'nl'.
 
-		:return:  List of App IDs in collection.
+		:return:  List of Play IDs in collection.
 		"""
 		if not collection:
 			collection = PlayStoreCollections.TOP_FREE
@@ -130,7 +137,7 @@ class PlayStoreScraper:
 
 	def get_app_ids_for_developer(self, developer_id, num=60, country="nl", lang="nl"):
 		"""
-		Retrieve App IDs linked to given developer
+		Retrieve Play IDs linked to given developer
 
 		:param str developer_id:  Developer ID
 		:param int num:  Number of results to return. Defaults to 60.
@@ -138,13 +145,13 @@ class PlayStoreScraper:
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
 
-		:return list:  List of App IDs linked to developer
+		:return list:  List of Play IDs linked to developer
 		"""
 		try:
 			developer_id = int(developer_id)
-			url = self.PLAYSTORE_URL + "/store/apps/dev?id="
+			url = self.PLAYSTORE_URL + "/store/apps/developer?id="
 		except ValueError:
-			url = self.PLAYSTORE_URL + "/store/apps/dev?id="
+			url = self.PLAYSTORE_URL + "/store/apps/developer?id="
 
 		url += quote_plus(str(developer_id))
 
@@ -158,17 +165,17 @@ class PlayStoreScraper:
 		except (json.JSONDecodeError, PlayStoreException):
 			raise PlayStoreException("Could not parse Play Store response")
 
-		return [app[12][0] for app in data[0][1][0][0][0]][:num]
+		return [app[12][0] for app in data[0][1][0][0][0]]
 
 	def get_similar_app_ids_for_app(self, app_id, country="nl", lang="nl"):
 		"""
-		Retrieve list of App IDs of apps similar to given app
+		Retrieve list of Play IDs of apps similar to given app
 
 		This one is a bit special because we first request the app details page
 		to get the link to the 'similar apps' page, and then request that page.
 		So this costs 2 requests per call.
 
-		:param str app_id:  App ID to find similar apps for
+		:param str app_id:  Play ID to find similar apps for
 		:param str country:  Two-letter country code for the store to search in.
 		                     Defaults to 'nl'.
 		:param str lang:  Language code to search with, default 'nl'
@@ -202,7 +209,7 @@ class PlayStoreScraper:
 		"""
 		Get a list of permissions for a given app
 
-		:param string app_id:  App ID to get permissions for
+		:param string app_id:  Play ID to get permissions for
 		:param string lang:  Language, defaults to 'en'. Parts of the
 		                     permission description seems to be in english no
 		                     matter the value of this parameter.
@@ -252,12 +259,12 @@ class PlayStoreScraper:
 		"""
 		Get app details for given app ID
 
-		:param str app_id:  App ID to retrieve details for
+		:param str app_id:  Play ID to retrieve details for
 		:param str country:  Two-letter country code of store to search in,
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
 
-		:return dict:  App details, as returned by the Play Store.
+		:return dict:  Play details, as returned by the Play Store.
 		"""
 		url = self.PLAYSTORE_URL + "/store/apps/details?id="
 		url += quote_plus(app_id)
@@ -275,7 +282,19 @@ class PlayStoreScraper:
 			rating = json.loads(self.extract_json_block(result, "ds:14"))
 
 		except (json.JSONDecodeError, PlayStoreException):
-			raise PlayStoreException("Could not parse Play Store response")
+			try:
+				#If we fail first, retry after a sleep.
+				# Fail if we cannot get a connection or data
+				time.sleep(2)
+				result = requests.get(url).text
+
+				pricing = json.loads(self.extract_json_block(result, "ds:3"))
+				info = json.loads(self.extract_json_block(result, "ds:5"))
+				version = json.loads(self.extract_json_block(result, "ds:8"))
+				pegi = json.loads(self.extract_json_block(result, "ds:11"))
+				rating = json.loads(self.extract_json_block(result, "ds:14"))
+			except:				
+				raise PlayStoreException("Could not parse Play Store response for {0}".format(app_id))
 
 		app = {
 			"img_src": info[0][12][1][3][2],
@@ -291,7 +310,7 @@ class PlayStoreScraper:
 			"num_downloads_approx": info[0][12][9][1],
 			"published": datetime.datetime.fromtimestamp(int(info[0][12][8][0])).strftime("%c"),
 			"published_timestamp": info[0][12][8][0],
-			"pegi": pegi[0][1][2][9][0],
+			"pegi": pegi[1][2][9][0],
 			"filesize": version[0],
 			"os": version[2],
 			"software": version[1],
@@ -310,7 +329,7 @@ class PlayStoreScraper:
 		"""
 		Get app details for a list of app IDs
 
-		:param list app_id:  App IDs to retrieve details for
+		:param list app_id:  Play IDs to retrieve details for
 		:param str country:  Two-letter country code of store to search in,
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
@@ -318,7 +337,15 @@ class PlayStoreScraper:
 		:return generator:  A list (via a generator) of app details
 		"""
 		for app_id in app_ids:
-			yield self.get_app_details(app_id, country=country, lang=lang)
+			try:
+				time.sleep(1)
+				yield self.get_app_details(app_id, country=country, lang=lang)
+			except PlayStoreException as pse:
+				self._log_error(country, pse.message)
+				continue
+			except Exception as e:
+				self._log_error(country, e)
+				continue
 
 	def extract_json_block(self, html, block_id):
 		"""
@@ -350,3 +377,17 @@ class PlayStoreScraper:
 		block = re.sub(r", sideChannel: {$", "", block)
 
 		return block
+
+	def _log_error(self, app_store_country, message):
+		"""
+		Write the error to a local file to capture the error. 
+
+	        :param str app_store_country: the country for the app store
+	        :param str message: the error message to log
+
+		"""
+		app_log = "{0}_log.txt".format(app_store_country)
+		errortime = datetime.datetime.now().strftime('%Y%m%d_%H:%M:%S - ')
+		fh = open(app_log, "a")
+		fh.write("%s %s \n" % (errortime,message))
+		fh.close()
