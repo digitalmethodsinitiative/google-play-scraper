@@ -27,7 +27,8 @@ Documentation is not available separately yet, but the code is relatively
 simple and you can look in the `scraper.py` file to see what methods are 
 available and what their parameters are.
 
-## License
+## Credits & License
 This scraper was developed by the 
 [Digital Methods Initiative](https://digitalmethods.net), and is distributed
-under the MIT license. See LICENSE for details.
+under the MIT license. See LICENSE for details. We additionally thank Iain 
+Emsley for his contributions to the code.
