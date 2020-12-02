@@ -330,10 +330,7 @@ class PlayStoreScraper:
 		}
 
 		try:
-			if country in ["cn", "kr", "jp"]:
-				app["rating"] = rating[0][0][7][0][1]
-			else:
-				app["rating"] = rating[0][0][0][7][0][1]
+			app["rating"] = rating[0][0][7][0][1]
 		except TypeError:
 			app["rating"] = 0
 		except Exception:
