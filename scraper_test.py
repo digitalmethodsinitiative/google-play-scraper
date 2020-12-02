@@ -28,6 +28,10 @@ def test_term_less_default():
 def test_term_results_less_than_default():
     scraper = PlayStoreScraper()
     results = scraper.get_app_ids_for_query("racism", country="gb", lang="en")
+<<<<<<< HEAD
+=======
+    print(len(results))
+>>>>>>> upstream/master
     assert len(results) == 50
 
 def test_no_term_gives_exception():
