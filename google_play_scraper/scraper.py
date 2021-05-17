@@ -149,7 +149,7 @@ class PlayStoreScraper:
 		"""
 		try:
 			developer_id = int(developer_id)
-			url = self.PLAYSTORE_URL + "/store/apps/developer?id="
+			url = self.PLAYSTORE_URL + "/store/apps/dev?id="
 		except ValueError:
 			url = self.PLAYSTORE_URL + "/store/apps/developer?id="
 
