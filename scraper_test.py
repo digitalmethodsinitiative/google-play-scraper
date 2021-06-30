@@ -5,6 +5,16 @@ import json
 import pytest
 import os
 
+def test_single_app_rating_cn():
+    scraper = PlayStoreScraper()
+    app = scraper.get_app_details("com.getsomeheadspace.android", country="cn", lang="en")
+    assert app["rating"] > 0
+
+def test_single_app_rating_gb():
+    scraper = PlayStoreScraper()
+    app = scraper.get_app_details("com.getsomeheadspace.android")
+    assert app["rating"] > 0
+
 def test_term_no_exception():
     scraper = PlayStoreScraper()
     results = scraper.get_app_ids_for_query("mindful", country="gb", lang="en")
@@ -18,7 +28,6 @@ def test_term_less_default():
 def test_term_results_less_than_default():
     scraper = PlayStoreScraper()
     results = scraper.get_app_ids_for_query("racism", country="gb", lang="en")
-    print(len(results))
     assert len(results) == 50
 
 def test_no_term_gives_exception():
