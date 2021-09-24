@@ -1,3 +1,6 @@
 __pycache__
 .pytest_cache
 google_play_scraper/__pycache__
+.idea/*
+*.egg-info
+*.ipynb
