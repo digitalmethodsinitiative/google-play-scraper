@@ -4,6 +4,21 @@ Play Store Scraper utility classes
 
 import json
 
+
+class WebsiteMappings:
+	"""
+	Mappings for the different website elements to allow easier updates
+	"""
+	app_details = {
+		'pricing': 'ds:4',  # ds:3
+		'info': 'ds:6',  # ds:5
+		'version': 'ds:3',  # ds:8
+		'pegi': 'ds:11',  # ds:11
+		'rating': 'ds:7',  # ds:14
+		'similar_apps': 'ds:8'  # ds:7
+	}
+
+
 class PlayStoreUtils:
 	"""
 	Helper class to access the names of the other classes
@@ -17,11 +32,12 @@ class PlayStoreUtils:
 
 			: return obj json: A JSON object of name against values
 		"""
-		method_names  = {}
+		method_names = {}
 		for collection in dir(clazz_name):
 			if not collection.startswith('__'):
 				method_names[str(collection.replace('_', ' '))] = getattr(clazz_name, str(collection))
 		return json.dumps({'names': method_names})
+
 
 class PlayStoreCollections:
 	"""
@@ -128,6 +144,7 @@ class PlayStoreException(BaseException):
 	"""
 	Thrown when an error occurs in the Play Store scraper
 	"""
+
 	def __init__(self, *args):
 		if args:
 			self.message = args[0]

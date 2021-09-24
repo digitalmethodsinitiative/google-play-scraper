@@ -8,7 +8,7 @@ import re
 import time
 
 from urllib.parse import quote_plus
-from google_play_scraper.util import PlayStoreException, PlayStoreCollections
+from google_play_scraper.util import PlayStoreException, PlayStoreCollections, WebsiteMappings
 
 
 class PlayStoreScraper:
@@ -75,7 +75,8 @@ class PlayStoreScraper:
 
 		while token:
 			next_request_payload = body.replace("%token%", token)
-			apps_page = requests.post(url, data={"f.req": next_request_payload}, headers={"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+			apps_page = requests.post(url, data={"f.req": next_request_payload},
+									  headers={"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
 			apps_page = apps_page.text[4:].strip()
 			apps_page = json.loads(apps_page)
 			apps_page = json.loads(apps_page[0][2])
@@ -85,7 +86,7 @@ class PlayStoreScraper:
 			# no token means no next page
 			token = apps_page[0][0][7][1] if apps_page[0][0][7] else None
 
-		return apps[:amount] 
+		return apps[:amount]
 
 	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="nl", country="nl"):
 		"""
@@ -190,7 +191,7 @@ class PlayStoreScraper:
 
 		try:
 			result = requests.get(url).text
-			data = self.extract_json_block(result, "ds:7")
+			data = self.extract_json_block(result, WebsiteMappings.app_details['similar_apps'])
 			data = json.loads(data)
 			similar_url = self.PLAYSTORE_URL + data[1][1][0][0][3][4][2]
 		except (json.JSONDecodeError, PlayStoreException):
@@ -270,15 +271,15 @@ class PlayStoreScraper:
 			raise PlayStoreException("Could not connect to : {0}".format(url))
 
 		try:
-			pricing = json.loads(self.extract_json_block(result, "ds:3"))
-			info = json.loads(self.extract_json_block(result, "ds:5"))
-			version = json.loads(self.extract_json_block(result, "ds:8"))
-			pegi = json.loads(self.extract_json_block(result, "ds:11"))
-			rating = json.loads(self.extract_json_block(result, "ds:14"))
+			pricing = json.loads(self.extract_json_block(result, WebsiteMappings.app_details['pricing']))
+			info = json.loads(self.extract_json_block(result, WebsiteMappings.app_details['info']))
+			version = json.loads(self.extract_json_block(result, WebsiteMappings.app_details['version']))
+			pegi = json.loads(self.extract_json_block(result, WebsiteMappings.app_details['pegi']))
+			rating = json.loads(self.extract_json_block(result, WebsiteMappings.app_details['rating']))
 		except json.JSONDecodeError as je:
 			raise PlayStoreException(str(je))
 
-		return (pricing, info, version, pegi, rating)
+		return pricing, info, version, pegi, rating
 
 	def get_app_details(self, app_id, country="nl", lang="nl"):
 		"""
@@ -299,12 +300,13 @@ class PlayStoreScraper:
 
 		try:
 			pricing, info, version, pegi, rating = self._app_connection(url)
+
 		except (json.JSONDecodeError, PlayStoreException):
 			try:
-				#If we fail first, retry after a sleep.
+				# If we fail first, retry after a sleep.
 				# Fail if we cannot get a connection or data
 				pricing, info, version, pegi, rating = self._app_connection(url, sleeptime=2)
-			except:				
+			except:
 				raise PlayStoreException("Could not parse Play Store response for {0}".format(app_id))
 
 		app = {
@@ -330,7 +332,7 @@ class PlayStoreScraper:
 		}
 
 		try:
-			app["rating"] = rating[0][0][7][0][1]
+			app["rating"] = rating[0][6][0][1] # rating[0][0][0][7][0][1]
 		except TypeError:
 			app["rating"] = 0
 		except Exception:
@@ -398,12 +400,12 @@ class PlayStoreScraper:
 		"""
 		Write the error to a local file to capture the error. 
 
-	        :param str app_store_country: the country for the app store
-	        :param str message: the error message to log
+			:param str app_store_country: the country for the app store
+			:param str message: the error message to log
 
 		"""
 		app_log = "{0}_log.txt".format(app_store_country)
 		errortime = datetime.datetime.now().strftime('%Y%m%d_%H:%M:%S - ')
 		fh = open(app_log, "a")
-		fh.write("%s %s \n" % (errortime,message))
+		fh.write("%s %s \n" % (errortime, message))
 		fh.close()
