@@ -255,6 +255,31 @@ class PlayStoreScraper:
 
 		return result
 
+	def _app_connection (self, url, sleeptime=0, retry=0) :
+		"""
+			Extracted method for app connection
+
+			:param string url : The URL to query
+		"""
+		if sleeptime > 0:
+			time.sleep(sleeptime)
+
+		try:
+			result = requests.get(url).text
+		except ConnectionError:
+			raise PlayStoreException("Could not connect to : {0}".format(url))
+
+		try:
+			pricing = json.loads(self.extract_json_block(result, "ds:3"))
+			info = json.loads(self.extract_json_block(result, "ds:5"))
+			version = json.loads(self.extract_json_block(result, "ds:8"))
+			pegi = json.loads(self.extract_json_block(result, "ds:11"))
+			rating = json.loads(self.extract_json_block(result, "ds:14"))
+		except json.JSONDecodeError as je:
+			raise PlayStoreException(str(je))
+
+		return (pricing, info, version, pegi, rating)
+
 	def get_app_details(self, app_id, country="nl", lang="nl"):
 		"""
 		Get app details for given app ID
@@ -273,26 +298,12 @@ class PlayStoreScraper:
 		url += "&gl=" + country
 
 		try:
-			result = requests.get(url).text
-
-			pricing = json.loads(self.extract_json_block(result, "ds:3"))
-			info = json.loads(self.extract_json_block(result, "ds:5"))
-			version = json.loads(self.extract_json_block(result, "ds:8"))
-			pegi = json.loads(self.extract_json_block(result, "ds:11"))
-			rating = json.loads(self.extract_json_block(result, "ds:14"))
-
+			pricing, info, version, pegi, rating = self._app_connection(url)
 		except (json.JSONDecodeError, PlayStoreException):
 			try:
 				#If we fail first, retry after a sleep.
 				# Fail if we cannot get a connection or data
-				time.sleep(2)
-				result = requests.get(url).text
-
-				pricing = json.loads(self.extract_json_block(result, "ds:3"))
-				info = json.loads(self.extract_json_block(result, "ds:5"))
-				version = json.loads(self.extract_json_block(result, "ds:8"))
-				pegi = json.loads(self.extract_json_block(result, "ds:11"))
-				rating = json.loads(self.extract_json_block(result, "ds:14"))
+				pricing, info, version, pegi, rating = self._app_connection(url, sleeptime=2)
 			except:				
 				raise PlayStoreException("Could not parse Play Store response for {0}".format(app_id))
 
@@ -319,8 +330,13 @@ class PlayStoreScraper:
 		}
 
 		try:
-			app["rating"] = rating[0][0][0][7][0][1]
+			app["rating"] = rating[0][0][7][0][1]
 		except TypeError:
+			app["rating"] = 0
+		except Exception:
+			#slight catch all but lets store the error
+			self._log_error(country, 
+				PlayStoreException("Index error in rating for {0}".format(app_id)))
 			app["rating"] = 0
 
 		return app
