@@ -10,12 +10,12 @@ class WebsiteMappings:
 	Mappings for the different website elements to allow easier updates
 	"""
 	app_details = {
-		'pricing': 'ds:4',  # ds:3
-		'info': 'ds:6',  # ds:5
-		'version': 'ds:3',  # ds:8
+		'pricing': 'ds:3',#'ds:4',  # ds:3
+		'info': 'ds:5',#'ds:6',  # ds:5
+		'version': 'ds:8',#'ds:3',  # ds:8
 		'pegi': 'ds:11',  # ds:11
-		'rating': 'ds:7',  # ds:14
-		'similar_apps': 'ds:8'  # ds:7
+		'rating': 'ds:7',#'ds:7',  # ds:14
+		'similar_apps': 'ds:7',#'ds:8'  # ds:7
 	}
 
 
