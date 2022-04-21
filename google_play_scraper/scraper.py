@@ -307,7 +307,7 @@ class PlayStoreScraper:
 				# Fail if we cannot get a connection or data
 				pricing, info, version, pegi, rating = self._app_connection(url, sleeptime=2)
 			except:
-				raise PlayStoreException("Could not parse Play Store response for {0}".format(app_id))
+				print("Could not parse Play Store response for {0}".format(app_id))
 
 		app = {
 			"img_src": info[0][12][1][3][2],
