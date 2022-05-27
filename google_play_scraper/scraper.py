@@ -22,7 +22,7 @@ class PlayStoreScraper:
 	"""
 	PLAYSTORE_URL = "https://play.google.com"
 
-	def get_app_ids_for_query(self, term, num=50, page=1, country="nl", lang="nl"):
+	def get_app_ids_for_query(self, term, num=50, page=1, country="br", lang="pt"):
 		"""
 		Retrieve suggested app IDs for search query
 
@@ -88,7 +88,7 @@ class PlayStoreScraper:
 
 		return apps[:amount]
 
-	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="nl", country="nl"):
+	def get_app_ids_for_collection(self, collection="", category="", age="", num=50, lang="pt", country="br"):
 		"""
 		Retrieve app IDs in given Play Store collection
 
@@ -136,7 +136,7 @@ class PlayStoreScraper:
 
 		return [app[12][0] for app in data[0][1][0][0][0]]
 
-	def get_app_ids_for_developer(self, developer_id, num=60, country="nl", lang="nl"):
+	def get_app_ids_for_developer(self, developer_id, num=60, country="br", lang="pt"):
 		"""
 		Retrieve Play IDs linked to given developer
 
@@ -168,7 +168,7 @@ class PlayStoreScraper:
 
 		return [app[12][0] for app in data[0][1][0][0][0]]
 
-	def get_similar_app_ids_for_app(self, app_id, country="nl", lang="nl"):
+	def get_similar_app_ids_for_app(self, app_id, country="br", lang="pt"):
 		"""
 		Retrieve list of Play IDs of apps similar to given app
 
@@ -206,7 +206,7 @@ class PlayStoreScraper:
 
 		return [app[12][0] for app in result[0][1][0][0][0]]
 
-	def get_permissions_for_app(self, app_id, lang="en", short=True):
+	def get_permissions_for_app(self, app_id, lang="pt", short=True):
 		"""
 		Get a list of permissions for a given app
 
@@ -281,7 +281,7 @@ class PlayStoreScraper:
 
 		return pricing, info, version, pegi, rating
 
-	def get_app_details(self, app_id, country="nl", lang="nl"):
+	def get_app_details(self, app_id, country="br", lang="pt"):
 		"""
 		Get app details for given app ID
 
@@ -343,7 +343,7 @@ class PlayStoreScraper:
 
 		return app
 
-	def get_multiple_app_details(self, app_ids, country="nl", lang="nl"):
+	def get_multiple_app_details(self, app_ids, country="br", lang="pt"):
 		"""
 		Get app details for a list of app IDs
 
