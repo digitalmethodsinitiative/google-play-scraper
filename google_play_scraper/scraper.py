@@ -349,7 +349,7 @@ class PlayStoreScraper:
 		}
 
 		try:
-			app["rating"] = rating[0][6][0][1] # rating[0][0][0][7][0][1]
+			app["rating"] = rating[0][6][0][1] #rating[0][0][0][7][0][1]
 		except TypeError:
 			app["rating"] = 0
 		except Exception:
