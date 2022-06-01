@@ -6,6 +6,7 @@ import requests
 import json
 import re
 import time
+from bs4 import BeautifulSoup
 
 from urllib.parse import quote_plus
 from google_play_scraper.util import PlayStoreException, PlayStoreCollections, WebsiteMappings
@@ -49,23 +50,39 @@ class PlayStoreScraper:
 
 		try:
 			result = requests.get(url).text
-			data = self.extract_json_block(result, "ds:3")
-			data = json.loads(data)
 		except ConnectionError as ce:
 			raise PlayStoreException("Could not not connect to store: {}".format(str(ce)))
-		except json.JSONDecodeError:
-			raise PlayStoreException("Could not parse search query response")
-		except IndexError:
-			return []
 
-		apps += [app[12][0] for app in data[0][1][0][0][0]][:amount]
+		soup = BeautifulSoup(result, 'html.parser')
+		# Find all listitems
+		apps_html = soup.find_all("div", {"role": "listitem"})
+		# Extract all links and search for those to 'store/apps/details?id='
+		# BeautifulSoup hates list comprehensions?
+		for app_html in apps_html:
+			for link in app_html.find_all("a"):
+				 if 'store/apps/details?id=' in link.get("href"):
+					 apps.append(link.get("href").split('store/apps/details?id=')[1])
 
+		# 2022-06-01 Google redesign and unsure how to reimpliment token
+		# They are using an infiniate scroll as opposed to pagination
+		# Prior implementation below:
 		# part two
 		# not all apps are loaded on the page initially, so we need to make
 		# subsequent requests via the internal API to request the additional
 		# apps. This request payload was borrowed from google-play-scraper.
 		body = '[[["qnKhOb","[[null,[[10,[10,50]],true,null,[96,27,4,8,57,30,110,79,11,16,49,1,3,9,12,104,55,56,51,10,34,77]],null,\\"%token%\\"]]",null,"generic"]]]'
-		token = data[0][1][0][0][7][1] if data[0][1][0][0][7] else None
+		try:
+			data = self.extract_json_block(result, "ds:3")
+			data = json.loads(data)
+			token = data[0][1][0][0][7][1] if data[0][1][0][0][7] else None
+		except json.JSONDecodeError:
+			token = None
+			self._log_error(country,
+				PlayStoreException("json.JSONDecodeError: unable to obtain token for additional results"))
+		except IndexError:
+			token = None
+			self._log_error(country,
+				PlayStoreException("Index error: unable to obtain token for additional results"))
 
 		url = self.PLAYSTORE_URL + "/_/PlayStoreUi/data/batchexecute?rpcids=qnKhOb&bl=boq_playuiserver_20190424.04_p0"
 		url += "&hl=" + lang
@@ -337,7 +354,7 @@ class PlayStoreScraper:
 			app["rating"] = 0
 		except Exception:
 			#slight catch all but lets store the error
-			self._log_error(country, 
+			self._log_error(country,
 				PlayStoreException("Index error in rating for {0}".format(app_id)))
 			app["rating"] = 0
 
@@ -398,7 +415,7 @@ class PlayStoreScraper:
 
 	def _log_error(self, app_store_country, message):
 		"""
-		Write the error to a local file to capture the error. 
+		Write the error to a local file to capture the error.
 
 			:param str app_store_country: the country for the app store
 			:param str message: the error message to log
