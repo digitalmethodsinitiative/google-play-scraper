@@ -24,7 +24,7 @@ class WebsiteMappings:
         'pegi': ['ds:4', 1, 2, 9, 0],
         'pegi_detail': ['ds:4', 1, 2, 9, 2, 1],
         'os': ['ds:4', 1, 2, 140, 1, 1, 0, 0, 1],
-        'rating': ['ds:6', 1, 1, 1, 21, 0, 1, 4, 1],
+        'rating': ['ds:4', 1, 2, 51, 0, 1],
         'description': ['ds:4', 1, 2, 72, 0, 1],
         'price': ['ds:4', 1, 2, 57, 0, 0, 0, 0, 1, 0, 2],
         'num_of_reviews': ['ds:4', 1, 2, 51, 2, 1]
