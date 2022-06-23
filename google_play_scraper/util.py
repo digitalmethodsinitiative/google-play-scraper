@@ -9,34 +9,39 @@ class WebsiteMappings:
     """
     Mappings for the different website elements to allow easier updates
     """
-    app_details_mapping = {'title': ['ds:4', 1, 2, 0, 0],
-                   'developer_name': ['ds:4', 1, 2, 68, 0],
-                   'developer_link': ['ds:4', 1, 2, 68, 1, 4, 2],
-                   'price_inapp': ['ds:4', 1, 2, 19, 0],
-                   'category': ['ds:4', 1, 2, 79, 0, 0, 1, 4, 2],
-                   'video_link': ['ds:4', 1, 2, 100, 1, 2, 0, 2],
-                   'icon_link': ['ds:4', 1, 2, 95, 0, 3, 2],
-                   'num_downloads_approx': ['ds:4', 1, 2, 13, 1],
-                   'num_downloads': ['ds:4', 1, 2, 13, 2],
-                   'published_date': ['ds:4', 1, 2, 10, 0],
-                   'published_timestamp': ['ds:4', 1, 2, 10, 1, 0],
-                   'pegi': ['ds:4', 1, 2, 9, 0],
-                   'pegi_detail': ['ds:4', 1, 2, 9, 2, 1],
-                   'os': ['ds:4', 1, 2, 140, 1, 1, 0, 0, 1],
-                   'rating': ['ds:6', 1, 1, 1, 21, 0, 1, 4, 1],
-                   'description': ['ds:4', 1, 2, 72, 0, 1],
-                   'price': ['ds:4', 1, 2, 57, 0, 0, 0, 0, 1, 0, 2],
-                   'num_of_reviews': ['ds:4', 1, 2, 51, 2, 1]}
+    app_details_mapping = {
+        'title': ['ds:4', 1, 2, 0, 0],
+        'developer_name': ['ds:4', 1, 2, 68, 0],
+        'developer_link': ['ds:4', 1, 2, 68, 1, 4, 2],
+        'price_inapp': ['ds:4', 1, 2, 19, 0],
+        'category': ['ds:4', 1, 2, 79, 0, 0, 1, 4, 2],
+        'video_link': ['ds:4', 1, 2, 100, 1, 2, 0, 2],
+        'icon_link': ['ds:4', 1, 2, 95, 0, 3, 2],
+        'num_downloads_approx': ['ds:4', 1, 2, 13, 1],
+        'num_downloads': ['ds:4', 1, 2, 13, 2],
+        'published_date': ['ds:4', 1, 2, 10, 0],
+        'published_timestamp': ['ds:4', 1, 2, 10, 1, 0],
+        'pegi': ['ds:4', 1, 2, 9, 0],
+        'pegi_detail': ['ds:4', 1, 2, 9, 2, 1],
+        'os': ['ds:4', 1, 2, 140, 1, 1, 0, 0, 1],
+        'rating': ['ds:6', 1, 1, 1, 21, 0, 1, 4, 1],
+        'description': ['ds:4', 1, 2, 72, 0, 1],
+        'price': ['ds:4', 1, 2, 57, 0, 0, 0, 0, 1, 0, 2],
+        'num_of_reviews': ['ds:4', 1, 2, 51, 2, 1]
+    }
 
     query_mapping = {
-	'list_of_apps': ['ds:4', 0, 1, 2, 22, 0],
-	'list_of_apps_2': ['ds:4', 0, 1, 3, 22, 0],
-	'list_of_apps_generic': ['ds:4', 0, 1, 0, 22, 0],
-	'list_of_apps_generic_2': ['ds:4', 0, 1, 1, 22, 0],
-	'app_id_in_list': [0, 0, 0],
-	'first_result': ['ds:4', 0, 1, 0, 23, 16, 2, 41, 0, 2],
-	'first_result_2': ['ds:4', 0, 1, 1, 23, 16, 2, 41, 0, 2],
-	}
+        'list_of_apps': ['ds:4', 0, 1, 2, 22, 0],
+        'list_of_apps_2': ['ds:4', 0, 1, 3, 22, 0],
+        'list_of_apps_generic': ['ds:4', 0, 1, 0, 22, 0],
+        'list_of_apps_generic_2': ['ds:4', 0, 1, 1, 22, 0],
+        'app_id_in_list': [0, 0, 0],
+        'first_result': ['ds:4', 0, 1, 0, 23, 16, 2, 41, 0, 2],
+        'first_result_2': ['ds:4', 0, 1, 1, 23, 16, 2, 41, 0, 2],
+        'list_of_apps_developer': ['ds:3', 0, 1, 0, 22, 0],
+        'list_of_apps_developer_id': ['ds:3', 0, 1, 0, 21, 0],
+        'app_id_in_list_dev_id': [0, 0],
+    }
 
     # Subdomain for collections
     # Can be used to identify links for additional collections

@@ -22,12 +22,13 @@ class PlayStoreScraper:
 	"""
 	PLAYSTORE_URL = "https://play.google.com"
 
-	def extract_all_app_ids_from_page(self, page_source):
+	@staticmethod
+	def extract_all_app_ids_from_page(page_source):
 		"""
 		Uses the WebsiteMappings.app_detail_link_subdomain to find any link on
 		a provided page source and returns the app id from that link.
 
-		:param str page_source Raw page source from request.get()
+		:param str page_source: Raw page source from request.get()
 		:return List: List of app ids
 		"""
 		soup = BeautifulSoup(page_source, 'html.parser')
@@ -98,13 +99,13 @@ class PlayStoreScraper:
 			potential_results = len(self.extract_all_app_ids_from_page(result))
 			if not potential_results == len(app_list):
 				self._log_error(country, 'App Query Warning: Results (%i) do not equal potential results (%i)' % (len(app_list), potential_results))
-				# TODO warn user?
+				# TODO how to warn user?
 
 		for app in app_list:
 			# Collect app id from each block
 			apps.append(WebsiteMappings.get_nested_item(app, WebsiteMappings.query_mapping['app_id_in_list']))
 
-		return apps
+		return apps[:amount]
 
 		# 2022-06-01 Google redesign and unsure how to reimpliment token
 		# They are using an infiniate scroll as opposed to pagination
@@ -211,8 +212,10 @@ class PlayStoreScraper:
 		try:
 			developer_id = int(developer_id)
 			url = self.PLAYSTORE_URL + "/store/apps/dev?id="
+			normal_dev_layout = False
 		except ValueError:
 			url = self.PLAYSTORE_URL + "/store/apps/developer?id="
+			normal_dev_layout = True
 
 		url += quote_plus(str(developer_id))
 
@@ -221,12 +224,35 @@ class PlayStoreScraper:
 
 		try:
 			result = requests.get(url).text
-			data = WebsiteMappings.extract_json_block(result, "ds:3")
-			data = json.loads(data)
-		except (json.JSONDecodeError, PlayStoreException):
-			raise PlayStoreException("Could not parse Play Store response")
+		except ConnectionError as ce:
+			raise PlayStoreException("Could not not connect to store: {}".format(str(ce)))
 
-		return [app[12][0] for app in data[0][1][0][0][0]]
+		# Collect all potential app IDs on page
+		potential_apps = self.extract_all_app_ids_from_page(result)
+
+		try:
+			# Collects specific results from JSON object
+			if normal_dev_layout:
+				app_list = WebsiteMappings.find_item_from_json_mapping(result, WebsiteMappings.query_mapping['list_of_apps_developer'])
+			else:
+				app_list = WebsiteMappings.find_item_from_json_mapping(result, WebsiteMappings.query_mapping[
+					'list_of_apps_developer_id'])
+		except Exception as e:
+			raise PlayStoreException('Generic query failed for country %s url %s: %s' % (country, url, str(e)))
+
+		# These normal dev pages only seem to have the specific apps we are looking for (as opposed to other results with "similar apps" or "app you might be interesed in"
+		if not len(potential_apps) == len(app_list):
+			self._log_error(country, 'App Query Warning: Results (%i) do not equal potential results (%i)' % (len(app_list), potential_results))
+			# TODO how to warn user?
+
+		# Collect app IDs from app_list
+		if normal_dev_layout:
+			apps = [WebsiteMappings.get_nested_item(app, WebsiteMappings.query_mapping['app_id_in_list']) for app in app_list]
+		else:
+			apps = [WebsiteMappings.get_nested_item(app, WebsiteMappings.query_mapping['app_id_in_list_dev_id']) for app in app_list]
+
+		return apps[:num]
+
 
 	def get_similar_app_ids_for_app(self, app_id, country="nl", lang="nl"):
 		"""
@@ -319,23 +345,6 @@ class PlayStoreScraper:
 
 		return result
 
-	def _app_connection(self, url, sleeptime=2, retry=0):
-		"""
-			Extracted method for app connection
-
-			:param string url : The URL to query
-		"""
-		try:
-			return requests.get(url).text
-		except ConnectionError:
-			if retry > 0:
-				if sleeptime > 0:
-					time.sleep(sleeptime)
-				retry = retry - 1
-				self._app_connection(url, sleeptime=sleeptime, retry=retry)
-			else:
-				raise PlayStoreException("Could not connect to : {0}".format(url))
-
 	def get_app_details(self, app_id, country="nl", lang="nl"):
 		"""
 		Get app details for given app ID
@@ -380,7 +389,7 @@ class PlayStoreScraper:
 		"""
 		Get app details for a list of app IDs
 
-		:param list app_id:  Play IDs to retrieve details for
+		:param list app_ids:  Play IDs to retrieve details for
 		:param str country:  Two-letter country code of store to search in,
 		                     default 'nl'
 		:param str lang:  Language code to search with, default 'nl'
@@ -398,6 +407,22 @@ class PlayStoreScraper:
 				self._log_error(country, e)
 				continue
 
+	def _app_connection(self, url, sleeptime=2, retry=0):
+		"""
+			Extracted method for app connection
+
+			:param string url : The URL to query
+		"""
+		try:
+			return requests.get(url).text
+		except ConnectionError:
+			if retry > 0:
+				if sleeptime > 0:
+					time.sleep(sleeptime)
+				retry = retry - 1
+				self._app_connection(url, sleeptime=sleeptime, retry=retry)
+			else:
+				raise PlayStoreException("Could not connect to : {0}".format(url))
 
 	def _log_error(self, app_store_country, message):
 		"""
