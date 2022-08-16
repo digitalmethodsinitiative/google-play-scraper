@@ -383,6 +383,18 @@ class PlayStoreScraper:
 			plural = 's' if len(app['errors']) > 1 else ''
 			app['errors'] = 'Detail%s not found for key%s: %s' % (plural, plural, ', '.join(app['errors']))
 
+		# Clean up any app details here
+		if app.get('developer_link'):
+			app['developer_link'] = self.PLAYSTORE_URL + app['developer_link']
+		if app.get('category'):
+			app['category'] = app['category'].replace('/store/apps/category/', '')
+
+		if app.get('data_safety_list'):
+			try:
+				app['data_safety_list'] = ', '.join([item[1] for item in app['data_safety_list']])
+			except IndexError:
+				pass
+
 		return app
 
 	def get_multiple_app_details(self, app_ids, country="nl", lang="nl"):

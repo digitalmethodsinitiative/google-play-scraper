@@ -27,7 +27,12 @@ class WebsiteMappings:
         'rating': ['ds:4', 1, 2, 51, 0, 1],
         'description': ['ds:4', 1, 2, 72, 0, 1],
         'price': ['ds:4', 1, 2, 57, 0, 0, 0, 0, 1, 0, 2],
-        'num_of_reviews': ['ds:4', 1, 2, 51, 2, 1]
+        'num_of_reviews': ['ds:4', 1, 2, 51, 2, 1],
+        'developer_email': ['ds:4', 1, 2, 69, 1, 0],
+        'developer_address': ['ds:4', 1, 2, 69, 2, 0],
+        'developer_website': ['ds:4', 1, 2, 69, 0, 5, 2],
+        'developer_privacy_policy_link': ['ds:4', 1, 2, 99, 0, 5, 2],
+        'data_safety_list': ['ds:4', 1, 2, 136, 1],
     }
 
     query_mapping = {
