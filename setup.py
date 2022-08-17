@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="google-play-scraper-dmi",
-    version="0.9.15",
+    version="0.9.16",
     author="Digital Methods Initiative",
     author_email="stijn.peeters@uva.nl",
     description="A lightweight Google Play Store scraper",
