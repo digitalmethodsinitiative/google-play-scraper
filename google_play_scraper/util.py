@@ -33,6 +33,8 @@ class WebsiteMappings:
         'developer_website': ['ds:4', 1, 2, 69, 0, 5, 2],
         'developer_privacy_policy_link': ['ds:4', 1, 2, 99, 0, 5, 2],
         'data_safety_list': ['ds:4', 1, 2, 136, 1],
+        'updated_on': ['ds:4', 1, 2, 145, 0, 0],
+        'app_version': ['ds:4', 1, 2, 140, 0, 0, 0]
     }
 
     query_mapping = {

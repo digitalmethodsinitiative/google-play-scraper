@@ -379,9 +379,6 @@ class PlayStoreScraper:
 					app['errors'].append(k)
 				else:
 					app['errors'] = [k]
-		if 'errors' in app.keys():
-			plural = 's' if len(app['errors']) > 1 else ''
-			app['errors'] = 'Detail%s not found for key%s: %s' % (plural, plural, ', '.join(app['errors']))
 
 		# Clean up any app details here
 		if app.get('developer_link'):
@@ -394,6 +391,20 @@ class PlayStoreScraper:
 				app['data_safety_list'] = ', '.join([item[1] for item in app['data_safety_list']])
 			except IndexError:
 				pass
+
+		# Any special details needing BeautifulSoup
+		soup = BeautifulSoup(request_result, 'html.parser')
+		# List of categories
+		list_of_categories = ', '.join([', '.join([category.text for category in element.find_all('span')]) for element in soup.find_all('div', {'class': 'Uc6QCc'})])
+		if list_of_categories:
+			app['list_of_categories'] = list_of_categories
+		else:
+			app['errors'] = app.get('errors', []).append('list_of_categories')
+
+		# Make errors print/csv friendly
+		if 'errors' in app.keys():
+			plural = 's' if len(app['errors']) > 1 else ''
+			app['errors'] = 'Detail%s not found for key%s: %s' % (plural, plural, ', '.join(app['errors']))
 
 		return app
 
