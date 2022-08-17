@@ -374,7 +374,7 @@ class PlayStoreScraper:
 			except PlayStoreException:
 				raise PlayStoreException("Could not parse Play Store response for {0}".format(app_id))
 			except Exception as e:
-				self._log_error(country, 'App Detail error on detail %s: %s' % (k, str(e)))
+				self._log_error(country, 'App Detail error for %s on detail %s: %s' % (app_id, k, str(e)))
 				if 'errors' in app.keys():
 					app['errors'].append(k)
 				else:
