@@ -399,7 +399,7 @@ class PlayStoreScraper:
 		if list_of_categories:
 			app['list_of_categories'] = list_of_categories
 		else:
-			app['errors'] = app.get('errors', []).append('list_of_categories')
+			app['errors'] = app.get('errors', []) + ['list_of_categories']
 
 		# Make errors print/csv friendly
 		if 'errors' in app.keys():
