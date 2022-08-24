@@ -9,32 +9,33 @@ class WebsiteMappings:
     """
     Mappings for the different website elements to allow easier updates
     """
+    app_detail_ds_block = 'ds:5' # Currently all details exist in the same block but that has not always been the case
     app_details_mapping = {
-        'title': ['ds:4', 1, 2, 0, 0],
-        'developer_name': ['ds:4', 1, 2, 68, 0],
-        'developer_link': ['ds:4', 1, 2, 68, 1, 4, 2],
-        'price_inapp': ['ds:4', 1, 2, 19, 0],
-        'category': ['ds:4', 1, 2, 79, 0, 0, 1, 4, 2],
-        'video_link': ['ds:4', 1, 2, 100, 1, 2, 0, 2],
-        'icon_link': ['ds:4', 1, 2, 95, 0, 3, 2],
-        'num_downloads_approx': ['ds:4', 1, 2, 13, 1],
-        'num_downloads': ['ds:4', 1, 2, 13, 2],
-        'published_date': ['ds:4', 1, 2, 10, 0],
-        'published_timestamp': ['ds:4', 1, 2, 10, 1, 0],
-        'pegi': ['ds:4', 1, 2, 9, 0],
-        'pegi_detail': ['ds:4', 1, 2, 9, 2, 1],
-        'os': ['ds:4', 1, 2, 140, 1, 1, 0, 0, 1],
-        'rating': ['ds:4', 1, 2, 51, 0, 1],
-        'description': ['ds:4', 1, 2, 72, 0, 1],
-        'price': ['ds:4', 1, 2, 57, 0, 0, 0, 0, 1, 0, 2],
-        'num_of_reviews': ['ds:4', 1, 2, 51, 2, 1],
-        'developer_email': ['ds:4', 1, 2, 69, 1, 0],
-        'developer_address': ['ds:4', 1, 2, 69, 2, 0],
-        'developer_website': ['ds:4', 1, 2, 69, 0, 5, 2],
-        'developer_privacy_policy_link': ['ds:4', 1, 2, 99, 0, 5, 2],
-        'data_safety_list': ['ds:4', 1, 2, 136, 1],
-        'updated_on': ['ds:4', 1, 2, 145, 0, 0],
-        'app_version': ['ds:4', 1, 2, 140, 0, 0, 0]
+        'title': [app_detail_ds_block, 1, 2, 0, 0],
+        'developer_name': [app_detail_ds_block, 1, 2, 68, 0],
+        'developer_link': [app_detail_ds_block, 1, 2, 68, 1, 4, 2],
+        'price_inapp': [app_detail_ds_block, 1, 2, 19, 0],
+        'category': [app_detail_ds_block, 1, 2, 79, 0, 0, 1, 4, 2],
+        'video_link': [app_detail_ds_block, 1, 2, 100, 1, 2, 0, 2],
+        'icon_link': [app_detail_ds_block, 1, 2, 95, 0, 3, 2],
+        'num_downloads_approx': [app_detail_ds_block, 1, 2, 13, 1],
+        'num_downloads': [app_detail_ds_block, 1, 2, 13, 2],
+        'published_date': [app_detail_ds_block, 1, 2, 10, 0],
+        'published_timestamp': [app_detail_ds_block, 1, 2, 10, 1, 0],
+        'pegi': [app_detail_ds_block, 1, 2, 9, 0],
+        'pegi_detail': [app_detail_ds_block, 1, 2, 9, 2, 1],
+        'os': [app_detail_ds_block, 1, 2, 140, 1, 1, 0, 0, 1],
+        'rating': [app_detail_ds_block, 1, 2, 51, 0, 1],
+        'description': [app_detail_ds_block, 1, 2, 72, 0, 1],
+        'price': [app_detail_ds_block, 1, 2, 57, 0, 0, 0, 0, 1, 0, 2],
+        'num_of_reviews': [app_detail_ds_block, 1, 2, 51, 2, 1],
+        'developer_email': [app_detail_ds_block, 1, 2, 69, 1, 0],
+        'developer_address': [app_detail_ds_block, 1, 2, 69, 2, 0],
+        'developer_website': [app_detail_ds_block, 1, 2, 69, 0, 5, 2],
+        'developer_privacy_policy_link': [app_detail_ds_block, 1, 2, 99, 0, 5, 2],
+        'data_safety_list': [app_detail_ds_block, 1, 2, 136, 1],
+        'updated_on': [app_detail_ds_block, 1, 2, 145, 0, 0],
+        'app_version': [app_detail_ds_block, 1, 2, 140, 0, 0, 0]
     }
 
     query_mapping = {
