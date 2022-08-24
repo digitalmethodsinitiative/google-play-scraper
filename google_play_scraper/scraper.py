@@ -242,7 +242,7 @@ class PlayStoreScraper:
 
 		# These normal dev pages only seem to have the specific apps we are looking for (as opposed to other results with "similar apps" or "app you might be interesed in"
 		if not len(potential_apps) == len(app_list):
-			self._log_error(country, 'App Query Warning: Results (%i) do not equal potential results (%i)' % (len(app_list), potential_results))
+			self._log_error(country, 'App Query Warning: Results (%i) do not equal potential results (%i)' % (len(app_list), len(potential_apps)))
 			# TODO how to warn user?
 
 		# Collect app IDs from app_list
