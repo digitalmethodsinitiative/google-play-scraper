@@ -1,11 +1,12 @@
 """
 Google Play Store Scraper
 """
-import datetime
 import requests
 import json
 import time
+import os
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 from urllib.parse import quote_plus
 from google_play_scraper.util import PlayStoreException, PlayStoreCollections, WebsiteMappings
@@ -451,12 +452,15 @@ class PlayStoreScraper:
 		"""
 		Write the error to a local file to capture the error.
 
-			:param str app_store_country: the country for the app store
-			:param str message: the error message to log
-
+		:param str app_store_country: the country for the app store
+		:param str message: the error message to log
 		"""
-		app_log = "{0}_log.txt".format(app_store_country)
-		errortime = datetime.datetime.now().strftime('%Y%m%d_%H:%M:%S - ')
+		log_dir = 'log/'
+		if not os.path.isdir(log_dir):
+			os.mkdir(log_dir)
+
+		app_log = os.path.join(log_dir, "{0}_log.txt".format(app_store_country))
+		errortime = datetime.now().strftime('%Y%m%d_%H:%M:%S - ')
 		fh = open(app_log, "a")
-		fh.write("%s %s \n" % (errortime, message))
+		fh.write("%s %s \n" % (errortime,message))
 		fh.close()

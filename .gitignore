@@ -4,3 +4,4 @@ google_play_scraper/__pycache__
 .idea/*
 *.egg-info
 *.ipynb
+log/*
